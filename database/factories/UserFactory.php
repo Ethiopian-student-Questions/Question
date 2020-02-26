@@ -21,11 +21,11 @@ use Illuminate\Support\Facades\Hash;
 
 $factory->define(User::class, function (Faker $faker) {
     return [
-        'user_name' => 'admin',
-        'email' => $faker->unique()->safeEmail,
-        'type' => 'admin',
-        'email_verified_at' => now(),
-        'password' => Hash::make('12345678'), // password
-        'remember_token' => Str::random(10),
-    ];
+      'user_name' => 'admin',
+      'email' => $faker->unique()->safeEmail,
+      'type' => 'admin',
+      'email_verified_at' => now(),
+      'password' => Hash::make('12345678'), // password
+      'remember_token' => Str::random(10),
+        ];
 });
