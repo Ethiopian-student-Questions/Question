@@ -22,7 +22,7 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public static function index()
     {
         if(Gate::allows('isAdmin')) {
             $users = UserController::index();

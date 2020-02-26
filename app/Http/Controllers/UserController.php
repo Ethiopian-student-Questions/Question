@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Question;
 use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Hash;
@@ -47,12 +48,13 @@ class UserController extends Controller
         if(Gate::allows('isAdmin')){
             $this->validater($request, false);
             User::create([
-                'user_name' => $request['user-name'],
+                'user_name' => $request['user_name'],
                 'email' => $request->email,
-                'type' => strtolower($request->type),
+                'type' => 'adviser',
                 'password' => Hash::make($request->password),
             ]);
         }
+        return HomeController::index();
     }
     
     /**
@@ -66,31 +68,29 @@ class UserController extends Controller
     {
         if ($isUpdate) {
             $request->validate([
-                'type' => 'required|string',
-                'user-name' => 'required|string|max:30|unique:users',
+                'user_name' => 'required|string|max:30|unique:users',
                 'email' => 'required|string|email|unique:users|max:255',
             ]);
 
             if(!empty($request->password))
             {
                 $request->validate([
-                    'password' => 'required|string|strong|min:6',
+                    'password' => 'required|string|min:6',
                 ]);
             }
         } else {
             $request->validate([
-                'type' => 'required|string',
-                'user-name' => 'required|string|max:30|unique:users',
+                'user_name' => 'required|string|max:30|unique:users',
                 'email' => 'required|string|email|unique:users|max:255',
-                'password' => 'required|string|strong|min:6',
+                'password' => 'required|string|min:6',
             ]);
         }
         
     }
 
-    public function show($id)
+    public function show(User $user)
     {
-        return view('admin.showUser');
+        return view('admin.showUser',compact("user"));
     }
 
     /**
@@ -116,7 +116,7 @@ class UserController extends Controller
         //if user is not admin he/she can update his/her account only
         $this->validater($request, true);
         auth()->user()->update([
-            'user_name' => $request['user-name'],
+            'user_name' => $request['user_name'],
         ]);
         if(!empty($request->password))
         {
