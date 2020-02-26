@@ -25,7 +25,7 @@ class Question extends Model
         return $this->belongsTo(Subject::class);
     }
 
-    public function answers()
+    public function answer()
     {
         return $this->hasOne(Answer::class);
     }
