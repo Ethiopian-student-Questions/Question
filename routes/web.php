@@ -23,6 +23,8 @@ Route::any('/admin', function () {
     return view('admin/adminHome');
 });
 
+Route::resource('user', 'UserController');
+
 
 Route::any('/admin/createuser', function () {
     return view('admin/addUser');

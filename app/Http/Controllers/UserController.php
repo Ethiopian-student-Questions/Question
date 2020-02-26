@@ -18,9 +18,11 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public static function index()
     {
-        
+        if (Gate::allows('isAdmin')) {
+            return User::all();
+        }
     }
 
     /**
@@ -30,7 +32,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        
+        return view('admin.addUser');
     }
 
     /**
@@ -88,7 +90,7 @@ class UserController extends Controller
 
     public function show($id)
     {
-        
+        return view('admin.showUser');
     }
 
     /**
