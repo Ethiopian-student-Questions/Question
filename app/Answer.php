@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-
+//Addin Comment here
 class Answer extends Model
 {
     protected $fillable = [
