@@ -48,7 +48,6 @@ class UserController extends Controller
         //only admin can create users
         if(Gate::allows('isAdmin')){
             $validatedData = $request->validated();
-            return $validatedData;
             User::create([
                 'user_name' => $request['user_name'],
                 'email' => $request['email'],
@@ -87,7 +86,6 @@ class UserController extends Controller
     {
         //if user is not admin he/she can update his/her account only
         $validatedData = $request->validated();
-        return $validatedData;
         auth()->user()->update([
             'user_name' => $request['user_name'],
         ]);
