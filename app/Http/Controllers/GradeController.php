@@ -8,6 +8,10 @@ use App\Grade;
 
 class GradeController extends Controller    
 {
+    public function getGrade()
+    {
+        return Grade::all();
+    }
     /**
      * Display a listing of the resource.
      *
