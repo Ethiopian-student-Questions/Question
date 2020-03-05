@@ -35,10 +35,14 @@
                         <!-- Right Side Of Navbar -->
                         <ul class="navbar-nav ml-auto">
                             <!-- Authentication Links -->
+                             <li class="nav-item">
+                                    <a class="nav-link" href="{{route('question.create')}}">Add Questoins</a>
+                                </li>
                             @guest
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('admin') }}">{{ __('Create User') }}</a>
                                 </li>
+                               
                                 @if (Route::has('register'))
                                     <li class="nav-item">
                                         <a class="nav-link" href="{{ route('register') }}">{{ __('Logout') }}</a>

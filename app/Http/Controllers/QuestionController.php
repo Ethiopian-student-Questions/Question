@@ -6,7 +6,7 @@ use App\Answer;
 use App\Explanation;
 use Illuminate\Http\Request;
 use App\Question;
-use Illuminate\Auth\Access\Gate;
+use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\QuestionRequest;
 use App\Subject;
 
