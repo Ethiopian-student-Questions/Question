@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Answer;
-use App\Explanation;
+// use App\Http\Controllers\ExplanationController;
 use Illuminate\Http\Request;
 use App\Question;
-use Illuminate\Auth\Access\Gate;
+use App\Explanation;
+use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\QuestionRequest;
 use App\Subject;
-
+use App\Grade;
 class QuestionController extends Controller
 {
     /**
@@ -32,7 +33,9 @@ class QuestionController extends Controller
     {
         $this->middleware('auth');
         if(Gate::allows('isAdvisor')) {
-            return view('question.create');
+            $subjects=Subject::select(['id','name'])->get();
+            $grades=Grade::where('id','>=','6')->select('id')->get();
+            return view('question.create',compact('grades','subjects'));
         }
     }
 
@@ -44,17 +47,25 @@ class QuestionController extends Controller
      */
     public function store(QuestionRequest $request)
     {
+     
         $this->middleware('auth');
+       // dd($request->validated());
         if(Gate::allows('isAdvisor')) {
-            $validatedData = $request->validated();
+                    $validatedData = $request->validated();
             $question = Question::create([
+                'user_id'=>auth()->user()->id,
                 'grade_id' => $validatedData['grade_id'],
                 'subject_id' => $validatedData['subject_id'],
                 'body' => $validatedData['body'],
+                'is_approved'=>true,
             ]);
     
             // create this question explanation
-            Explanation::store($question->id, $validatedData['explanation']);
+            Explanation::create([
+                'question_id'=>$question->id,
+                'body'=>$validatedData['explanation']
+            ]);
+            // ExplanationController::store($question->id, $validatedData['explanation']);
             
             //select correct answer choise
             $choise = ['A', 'B', 'C', 'D'];
@@ -74,7 +85,12 @@ class QuestionController extends Controller
             $incorrectAnswer = json_encode($incorrectAnswer);
     
             //create answer for this question
-            Answer::store($question->id, $validatedData['correct_answer'], $incorrectAnswer);
+            Answer::create([
+                'question_id'=>$question->id,
+                'correct'=>$validatedData['correct_answer'],
+                'incorrect'=>$incorrectAnswer
+            ]);
+            // AnswerController::store($question->id, $validatedData['correct_answer'], $incorrectAnswer);
             $this->index();
         }
 

@@ -35,14 +35,16 @@
                         <!-- Left Side Of Navbar -->
                         <ul class="nav ml-3 nav-tabs" id="myTab" role="tablist">
                             <li class="nav-item">
-                              <a class="nav-link" href="/home" role="tab" aria-controls="home" aria-selected="true">Home</a>
+                    <a class="nav-link" href="/home" role="tab" aria-controls="home" aria-selected="true">Home</a>
                             </li>
                             <li class="nav-item">
                               <a class="nav-link" href="/grade" role="tab" aria-controls="grade" aria-selected="false">Grade</a>
                             </li>
                             <li class="nav-item">
                               <a class="nav-link" href="/subject" role="tab" aria-controls="profile" aria-selected="false">Subject</a>
+
                             </li>
+                          
                           </ul>
                         <!-- Right Side Of Navbar -->
                         <ul class="navbar-nav ml-auto">

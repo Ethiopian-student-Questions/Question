@@ -39,7 +39,7 @@ class HomeController extends Controller
     {
         $questions = auth()->user()->questions;
         foreach ($questions as $question) {
-
+            
                 $answer = $question->answer;
                 $question['correctAnswer'] = $answer->correct;
                 $question['incorrectAnswer'] = json_decode($answer->incorrect, true);
