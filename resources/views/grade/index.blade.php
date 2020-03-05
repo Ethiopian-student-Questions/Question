@@ -1,1 +1,1 @@
-@extends('admin.adminbase')
+@extends('layout.advisorApp')

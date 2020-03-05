@@ -28,8 +28,9 @@ class HomeController extends Controller
             $users = UserController::index();
             return view('admin.adminHome', compact('users'));
         }
-        else {
-            return view('home');
+        elseif(Gate::allows('isAdvisor')) {
+            $questions = auth()->user()->questions;
+            return view('question.index', compact('questions'));
         }
     }
 }
