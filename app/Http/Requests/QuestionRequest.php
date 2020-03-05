@@ -16,7 +16,7 @@ class QuestionRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -27,7 +27,7 @@ class QuestionRequest extends FormRequest
     public function rules()
     {
         return [
-            'grade_id' => 'digits_between:min=5,max=13|required',
+            'grade_id' => 'integer|required',
             'subject_id' => 'required|integer',
             'body' => 'required|string',
             'explanation' => 'required|string',

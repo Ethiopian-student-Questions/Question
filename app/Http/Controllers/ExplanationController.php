@@ -35,7 +35,6 @@ class ExplanationController extends Controller
      */
     public function store($question_id, $body)
     {
-        $this->middleware('auth');
         Explanation::create([
             'question_id' => $question_id,
             'body' => $body,
