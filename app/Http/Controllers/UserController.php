@@ -8,6 +8,7 @@ use App\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\UserRequest;
+use App\Http\Controller\HomeController;
 
 class UserController extends Controller
 {
@@ -48,7 +49,6 @@ class UserController extends Controller
         //only admin can create users
         if(Gate::allows('isAdmin')){
             $validatedData = $request->validated();
-            return $validatedData;
             User::create([
                 'user_name' => $request['user_name'],
                 'email' => $request['email'],
