@@ -126,21 +126,13 @@ class QuestionController extends Controller
             // create this question explanation
             Explanation::update($question->id, $validatedData['explanation']);
             
-            //select correct answer choise
-            $choise = ['A', 'B', 'C', 'D'];
-            $correctAnswerChoise = rand(0, 3);
+            
             // conver incorrect answer to json file
             $incorrectAnswer = array();
-            $count = 1;
-            for ($i=0; $i < 4; $i++) { 
-                if($i != $correctAnswerChoise) {
-                    $incorrectAnswer[$choise[$i]] = $validatedData['incorrect_answer_'.$count++];
-                }
-                else {
-                    $i++;
-                    $incorrectAnswer[$choise[$i]] = $validatedData['incorrect_answer_'.$count++];
-                }
-            }
+            $incorrectAnswer[0] = $validatedData['incorrect_answer_1'];
+            $incorrectAnswer[1] = $validatedData['incorrect_answer_2'];
+            $incorrectAnswer[2] = $validatedData['incorrect_answer_3'];
+            
             $incorrectAnswer = json_encode($incorrectAnswer);
     
             //create answer for this question

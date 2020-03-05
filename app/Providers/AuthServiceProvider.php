@@ -30,7 +30,7 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('isAdvisor', function($user) {
-            return $user->type === 'advisor';
+            return $user->type === 'adviser';
         });
     }
 }
