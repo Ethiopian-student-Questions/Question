@@ -11,6 +11,8 @@
 |
 */
 
+//use Illuminate\Routing\Route;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -19,12 +21,16 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::any('/admin', function () {
-    return view('admin/adminHome');
-});
 
 Route::resource('user', 'UserController');
 
+Route::get('grade', 'GradeController@index');
+
+Route::delete('grade/{id}', 'GradeController@destroy');
+
+Route::resource('subject', 'SubjectController');
+
+Route::resource('question', 'QuestionController');
 
 Route::any('/admin/createuser', function () {
     return view('admin/addUser');

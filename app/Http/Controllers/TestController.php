@@ -2,17 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Subject;
-use Illuminate\Auth\Access\Gate;
 use Illuminate\Http\Request;
 
-class SubjectController extends Controller
+class TestController extends Controller
 {
-
-    public function _construct()
-    {
-        $this->middleware('auth');
-    }
     /**
      * Display a listing of the resource.
      *
@@ -20,8 +13,7 @@ class SubjectController extends Controller
      */
     public function index()
     {
-        $subject = Subject::all();
-        return view('subject.index');
+        //
     }
 
     /**
@@ -31,9 +23,7 @@ class SubjectController extends Controller
      */
     public function create()
     {
-        if(Gate::allows('isAdmin')) {
-            return view('subject.create');
-        }
+        //
     }
 
     /**
@@ -44,17 +34,7 @@ class SubjectController extends Controller
      */
     public function store(Request $request)
     {
-        if(Gate::allows('isAdmin')) {
-            $request->validate([
-                'name' => 'required|string|unique:subjects',
-            ]);
-
-            Subject::create([
-                'name' => $request->name,
-            ]);
-
-            $this->index();
-        }
+        //
     }
 
     /**
@@ -74,11 +54,9 @@ class SubjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Subject $subject)
+    public function edit($id)
     {
-        if(Gate::allows('isAdmin')) {
-            return view('subject.edit', compact('subject'));
-        }
+        //
     }
 
     /**
@@ -88,19 +66,9 @@ class SubjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Subject $subject)
+    public function update(Request $request, $id)
     {
-        if(Gate::allows('isAdmin')) {
-            $request->validate([
-                'name' => 'required|string|unique:subjects,name,'.$this->name,
-            ]);
-
-            $subject->update([
-                'name' => $request->name,
-            ]);
-
-            $this->index();
-        }
+        //
     }
 
     /**
@@ -109,12 +77,8 @@ class SubjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Subject $subject)
+    public function destroy($id)
     {
-        if(Gate::allows('isAdmin')) {
-            $subject->delete();
-
-            $this->index();
-        }
+        //
     }
 }

@@ -3,6 +3,7 @@
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
 use App\User;
+use App\Grade;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
@@ -26,4 +27,10 @@ $factory->define(User::class, function (Faker $faker) {
       'password' => Hash::make('12345678'), // password
       'remember_token' => Str::random(10),
     ];
+});
+
+$factory->define(Grade::class, function (Faker $faker) {
+  return [
+    
+  ];
 });

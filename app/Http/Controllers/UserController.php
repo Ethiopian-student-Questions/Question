@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\UserRequest;
 
 class UserController extends Controller
 {
@@ -22,7 +23,7 @@ class UserController extends Controller
     public static function index()
     {
         if (Gate::allows('isAdmin')) {
-            return User::all();
+            return User::whereType('adviser')->get();
         }
     }
 
@@ -42,51 +43,22 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
         //only admin can create users
         if(Gate::allows('isAdmin')){
-            $this->validater($request, false);
+            $validatedData = $request->validated();
+            return $validatedData;
             User::create([
                 'user_name' => $request['user_name'],
-                'email' => $request->email,
+                'email' => $request['email'],
                 'type' => 'adviser',
-                'password' => Hash::make($request->password),
+                'password' => Hash::make($request['password']),
             ]);
         }
         return HomeController::index();
     }
     
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-
-    protected function validater($request, $isUpdate)
-    {
-        if ($isUpdate) {
-            $request->validate([
-                'user_name' => 'required|string|max:30|unique:users',
-                'email' => 'required|string|email|unique:users|max:255',
-            ]);
-
-            if(!empty($request->password))
-            {
-                $request->validate([
-                    'password' => 'required|string|min:6',
-                ]);
-            }
-        } else {
-            $request->validate([
-                'user_name' => 'required|string|max:30|unique:users',
-                'email' => 'required|string|email|unique:users|max:255',
-                'password' => 'required|string|min:6',
-            ]);
-        }
-        
-    }
 
     public function show(User $user)
     {
@@ -111,10 +83,11 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UserRequest $request, $id)
     {
         //if user is not admin he/she can update his/her account only
-        $this->validater($request, true);
+        $validatedData = $request->validated();
+        return $validatedData;
         auth()->user()->update([
             'user_name' => $request['user_name'],
         ]);
@@ -137,6 +110,7 @@ class UserController extends Controller
         //only admin can delete user
         if (Gate::allows('isAdmin')) {
             $user->delete();
+            return HomeController::index(); 
         }
     }
 }
