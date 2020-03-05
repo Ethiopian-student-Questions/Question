@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Grade;
 
 
-class GradeController extends Controller
+class GradeController extends Controller    
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class GradeController extends Controller
     public function index()
     {
         $grades = Grade::all();
-        return view('grade.index', compact('grades'));
+        return view('admin.grade.index', compact('grades'));
     }
 
     /**
@@ -46,9 +46,9 @@ class GradeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Grade $grade)
     {
-        //
+        return view('admin.grade.show', compact('grade'));
     }
 
     /**

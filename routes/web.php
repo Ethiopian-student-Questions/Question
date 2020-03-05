@@ -27,6 +27,8 @@ Route::get('grade', 'GradeController@index');
 
 Route::delete('grade/{id}', 'GradeController@destroy');
 
+Route::get('grade/{grade}', 'GradeController@show');
+
 Route::resource('subject', 'SubjectController');
 
 Route::resource('question', 'QuestionController');
