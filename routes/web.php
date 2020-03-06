@@ -30,6 +30,7 @@ Route::delete('grade/{id}', 'GradeController@destroy');
 Route::resource('subject', 'SubjectController');
 
 Route::resource('question', 'QuestionController');
+Route::get('advisorHome','QuestionController@index')->name('advisorHome');
 
 Route::any('/admin/createuser', function () {
     return view('admin/addUser');

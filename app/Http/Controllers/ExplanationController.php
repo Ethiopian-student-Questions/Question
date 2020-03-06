@@ -70,13 +70,15 @@ class ExplanationController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update($question_id, $body)
+    public static function update($question_id, $body)
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
         $explanation = Explanation::whereQuestionId($question_id)->first();
         $explanation->update([
             'body' => $body,
         ]);
+        return true;
+        
     }
 
     /**

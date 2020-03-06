@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Answer;
-// use App\Http\Controllers\ExplanationController;
+use App\Http\Controllers\ExplanationController;
+use App\Http\Controllers\AnswerController;
 use Illuminate\Http\Request;
 use App\Question;
 use App\Explanation;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\QuestionRequest;
 use App\Subject;
 use App\Grade;
+use App\Http\Controllers\HomeController;
 class QuestionController extends Controller
 {
     /**
@@ -21,6 +23,7 @@ class QuestionController extends Controller
     public function index()
     {
         $questions = Question::all();
+
         return view('question.index', compact('questions'));
     }
 
@@ -47,11 +50,11 @@ class QuestionController extends Controller
      */
     public function store(QuestionRequest $request)
     {
-     
+        // dd($request->validated()['correct_answer']);
         $this->middleware('auth');
        // dd($request->validated());
         if(Gate::allows('isAdvisor')) {
-                    $validatedData = $request->validated();
+            $validatedData = $request->validated();
             $question = Question::create([
                 'user_id'=>auth()->user()->id,
                 'grade_id' => $validatedData['grade_id'],
@@ -60,30 +63,20 @@ class QuestionController extends Controller
                 'is_approved'=>true,
             ]);
     
-            // create this question explanation
             Explanation::create([
                 'question_id'=>$question->id,
                 'body'=>$validatedData['explanation']
             ]);
             // ExplanationController::store($question->id, $validatedData['explanation']);
             
-            //select correct answer choise
-            $choise = ['A', 'B', 'C', 'D'];
-            $correctAnswerChoise = rand(0, 3);
-            // conver incorrect answer to json file
+            //select correct answer 
             $incorrectAnswer = array();
-            $count = 1;
-            for ($i=0; $i < 4; $i++) { 
-                if($i != $correctAnswerChoise) {
-                    $incorrectAnswer[$choise[$i]] = $validatedData['incorrect_answer_'.$count++];
-                }
-                else {
-                    $i++;
-                    $incorrectAnswer[$choise[$i]] = $validatedData['incorrect_answer_'.$count++];
-                }
-            }
+            $incorrectAnswer[0] = $validatedData['incorrect_answer_1'];
+            $incorrectAnswer[1] = $validatedData['incorrect_answer_2'];
+            $incorrectAnswer[2] = $validatedData['incorrect_answer_3'];
+            
             $incorrectAnswer = json_encode($incorrectAnswer);
-    
+            
             //create answer for this question
             Answer::create([
                 'question_id'=>$question->id,
@@ -91,7 +84,8 @@ class QuestionController extends Controller
                 'incorrect'=>$incorrectAnswer
             ]);
             // AnswerController::store($question->id, $validatedData['correct_answer'], $incorrectAnswer);
-            $this->index();
+            return redirect()->route('home')->with('success','Question Added Successfully');
+            // return view (redirect('question.index',)->with('success','Question is Created'));
         }
 
     }
@@ -103,9 +97,17 @@ class QuestionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Question $question)
-    {
-        return view('question.show');
+
+    {   
+            $subjects=Subject::select(['id','name'])->where('id','!=',$question->subject_id)->get();
+            $grades=Grade::where('id','>=','6')->where('id','!=',$question->grade_id)->select('id')->get();
+            $current_subject=Subject::select(['id','name'])->where('id',$question->subject_id)->first();
+            $current_grade=Grade::where('id',$question->grade_id)->select('id')->first();
+            $incorrect=json_decode($question->answer->incorrect);
+            // dd($incorrect[0]);
+             return view('question.show',compact('question','subjects','grades','current_subject','current_grade','incorrect'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -140,21 +142,19 @@ class QuestionController extends Controller
             ]);
     
             // create this question explanation
-            Explanation::update($question->id, $validatedData['explanation']);
-            
+            ExplanationController::update($question->id, $validatedData['explanation']);
             
             // conver incorrect answer to json file
             $incorrectAnswer = array();
             $incorrectAnswer[0] = $validatedData['incorrect_answer_1'];
             $incorrectAnswer[1] = $validatedData['incorrect_answer_2'];
             $incorrectAnswer[2] = $validatedData['incorrect_answer_3'];
-            
             $incorrectAnswer = json_encode($incorrectAnswer);
     
-            //create answer for this question
-            Answer::update($question->id, $validatedData['correct_answer'], $incorrectAnswer);
+            AnswerController::update($question->id, $validatedData['correct_answer'], $incorrectAnswer);
             
-            $this->index();
+             return redirect()->route('home')->with('success','Update successfully');
+            // redirect(route('home'));
         }
     }
 
@@ -171,5 +171,25 @@ class QuestionController extends Controller
             $question->delete();
             $this->index();
         }
+        return redirect()->route('home')->with('success','Delete successfully');
     }
 }
+
+
+// $choise = ['A', 'B', 'C', 'D'];
+
+//             $correctAnswerChoise = rand(0, 3);
+//             // conver incorrect answer to json file
+//             $incorrectAnswer = array();
+//             $count = 1;
+//             for ($i=0; $i < 4; $i++) { 
+//                 if($i != $correctAnswerChoise) {
+//                     $incorrectAnswer[$choise[$i]] = $validatedData['incorrect_answer_'.$count++];
+//                 }
+//                 else {
+//                     $i++;
+//                     $incorrectAnswer[$choise[$i]] = $validatedData['incorrect_answer_'.$count++];
+//                 }
+//             }
+//             $incorrectAnswer = json_encode($incorrectAnswer);
+//     
