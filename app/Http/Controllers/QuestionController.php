@@ -12,14 +12,9 @@ use App\Explanation;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\QuestionRequest;
 use App\Subject;
-use App\Grade;
 use App\Http\Controllers\HomeController;
 
 use App\Grade;
-use App\Question;
-use Illuminate\Support\Facades\Gate;
-use App\Http\Requests\QuestionRequest;
-use App\Subject;
 use Illuminate\Support\Facades\DB;
 
 class QuestionController extends Controller
@@ -110,13 +105,7 @@ class QuestionController extends Controller
     public function show(Question $question)
 
     {   
-            $subjects=Subject::select(['id','name'])->where('id','!=',$question->subject_id)->get();
-            $grades=Grade::where('id','>=','6')->where('id','!=',$question->grade_id)->select('id')->get();
-            $current_subject=Subject::select(['id','name'])->where('id',$question->subject_id)->first();
-            $current_grade=Grade::where('id',$question->grade_id)->select('id')->first();
-            $incorrect=json_decode($question->answer->incorrect);
-            // dd($incorrect[0]);
-             return view('question.show',compact('question','subjects','grades','current_subject','current_grade','incorrect'));
+            
     }
 
 
@@ -130,13 +119,13 @@ class QuestionController extends Controller
      */
     public function edit(Question $question)
     {
-        $this->middleware('auth');
-        if(Gate::allows('isAdvisor')) {
-            $grades = Grade::all();
-            $subjects = Subject::all();
-            $question = $this->adjustQuestionAnswerExplanation($question);
-            return view('question.edit', compact('question', 'subjects', 'grades'));
-        }
+        $subjects=Subject::select(['id','name'])->where('id','!=',$question->subject_id)->get();
+            $grades=Grade::where('id','>=','6')->where('id','!=',$question->grade_id)->select('id')->get();
+            $current_subject=Subject::select(['id','name'])->where('id',$question->subject_id)->first();
+            $current_grade=Grade::where('id',$question->grade_id)->select('id')->first();
+            $incorrect=json_decode($question->answer->incorrect);
+            // dd($incorrect[0]);
+             return view('question.edit',compact('question','subjects','grades','current_subject','current_grade','incorrect'));
     }
 
     private static function adjustQuestionAnswerExplanation($question)    

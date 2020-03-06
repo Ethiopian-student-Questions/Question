@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\UserRequest;
 use App\Http\Controller\HomeController;
-use App\Http\Controllers\HomeController;
 
 class UserController extends Controller
 {
