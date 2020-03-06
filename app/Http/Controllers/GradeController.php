@@ -8,10 +8,6 @@ use App\Grade;
 
 class GradeController extends Controller    
 {
-    public function getGrade()
-    {
-        return Grade::all();
-    }
     /**
      * Display a listing of the resource.
      *
@@ -52,7 +48,22 @@ class GradeController extends Controller
      */
     public function show(Grade $grade)
     {
+        $grade['questions'] = $this->adjustQuestionAnswerExplanation($grade);
         return view('admin.grade.show', compact('grade'));
+    }
+
+    private function adjustQuestionAnswerExplanation($grade)    
+    {
+        $questions = $grade->questions;
+        foreach ($questions as $question) {
+
+                $answer = $question->answer;
+                $question['correctAnswer'] = $answer->correct;
+                $question['incorrectAnswer'] = json_decode($answer->incorrect, true);
+                $question['explanation'] = $question->explanation->body;
+                
+            }
+        return $questions;
     }
 
     /**
@@ -87,6 +98,6 @@ class GradeController extends Controller
     public function destroy(Grade $grade)
     {
         $grade->delete();
-        return $this->index();
+        return redirect('/grade');
     }
 }

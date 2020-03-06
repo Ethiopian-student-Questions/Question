@@ -8,11 +8,6 @@ use Illuminate\Http\Request;
 
 class SubjectController extends Controller
 {
-
-    public function getSubjects()
-    {
-        return Subject::all();
-    }
     /**
      * Display a listing of the resource.
      *
@@ -56,7 +51,7 @@ class SubjectController extends Controller
                 'name' => $request->name,
             ]);
 
-            return $this->index();
+            return redirect('/subject');;
         }
     }
 
@@ -68,7 +63,22 @@ class SubjectController extends Controller
      */
     public function show(Subject $subject)
     {
+        $subject['questions'] = $this->adjustQuestionAnswerExplanation($subject);
         return view('admin.subject.show', compact('subject'));
+    }
+
+    private function adjustQuestionAnswerExplanation($subject)    
+    {
+        $questions = $subject->questions;
+        foreach ($questions as $question) {
+
+                $answer = $question->answer;
+                $question['correctAnswer'] = $answer->correct;
+                $question['incorrectAnswer'] = json_decode($answer->incorrect, true);
+                $question['explanation'] = $question->explanation->body;
+                
+            }
+        return $questions;
     }
 
     /**
@@ -104,7 +114,7 @@ class SubjectController extends Controller
                 'name' => $request->name,
             ]);
 
-            $this->index();
+            redirect('/subject');
         }
     }
 
@@ -120,7 +130,7 @@ class SubjectController extends Controller
         if(Gate::allows('isAdmin')) {
             $subject->delete();
 
-            $this->index();
+            redirect('/subject');
         }
     }
 }

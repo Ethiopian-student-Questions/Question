@@ -3,11 +3,11 @@
 @section('content')
 <div class="container">
   <div class="list-group">
-    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
+    <p href="#" class="list-group-item list-group-item-action flex-column align-items-start active">
       <div class="d-flex w-100 justify-content-between">
-        <h1>Users</h1>
+        <h1>Deactivated Users</h1>
       </div>
-    </a>
+    </p>
     @foreach ($users as $user)
       <a href="/user/{{ $user->id }}" class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
@@ -18,7 +18,4 @@
     @endforeach
   </div>
 </div>
-@if (session('success'))
-    <confermation-message message={{ session('success') }}></confermation-message>
-@endif
 @endsection

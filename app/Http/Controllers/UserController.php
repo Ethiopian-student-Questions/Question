@@ -8,6 +8,7 @@ use App\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\UserRequest;
+use App\Http\Controllers\HomeController;
 
 class UserController extends Controller
 {
@@ -55,7 +56,7 @@ class UserController extends Controller
                 'password' => Hash::make($request['password']),
             ]);
         }
-        return HomeController::index();
+        return redirect('/home')->with('success', 'user added successfully');
     }
     
 
@@ -72,7 +73,7 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        
+        return view('auth.editProfile');
     }
 
     /**
@@ -88,6 +89,7 @@ class UserController extends Controller
         $validatedData = $request->validated();
         auth()->user()->update([
             'user_name' => $request['user_name'],
+            'email' => $request['email'],
         ]);
         if(!empty($request->password))
         {
@@ -95,6 +97,7 @@ class UserController extends Controller
                 'password' => Hash::make($request->password),
             ]);
         }
+        return redirect('/home');
     }
 
     /**
@@ -108,7 +111,13 @@ class UserController extends Controller
         //only admin can delete user
         if (Gate::allows('isAdmin')) {
             $user->delete();
-            return HomeController::index(); 
+            return redirect('/home'); 
         }
+    }
+
+    public function getDeactivated()
+    {
+        $users = User::onlyTrashed()->get();
+        return view('admin.user.deactivated', compact('users'));
     }
 }

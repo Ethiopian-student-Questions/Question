@@ -23,11 +23,13 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::resource('user', 'UserController');
 
+Route::get('user/deactivated', 'UserController@getDeactivated')->name('user.deactivated');
+
 Route::get('grade', 'GradeController@index');
 
 Route::delete('grade/{id}', 'GradeController@destroy');
 
-Route::get('grade/{grade}', 'GradeController@show');
+Route::get('grade/{grade}', 'GradeController@show')->name('grade.show');
 
 Route::resource('subject', 'SubjectController');
 

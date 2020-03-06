@@ -29,16 +29,17 @@ class UserRequest extends FormRequest
         $rules = [];
         if($this->getMethod() == 'POST') {
             $rules = [
-                'user_name' => 'required|string|max:30|unique:users',
-                'email' => 'required|string|email|unique:users|max:255',
+                'user_name' => 'bail|required|string|max:30|unique:users',
+                'email' => 'bail|required|string|email|unique:users|max:255',
                 'password' => 'required|string|min:6'];
         }
-        // elseif($this->getMethod() == 'PUT') {
-        //     $rules = [
-        //         'user_name' => 'bail|required|string|max:30|unique:users,user_name,'.$this->user,
-        //         'email' => 'required|string|email|unique:users|max:255,email,'.$this->user,
-        //         'password' => 'sometimes|required|string|min:6'];
-        // }
+        elseif($this->getMethod() == 'PUT') {
+            $rules = [
+                'user_name' => 'bail|required|string|max:30|unique:users,user_name,'.$this->user,
+                'email' => 'bail|required|string|email|max:255|unique:users,email,'.$this->user,
+                'password' => 'sometimes|nullable|string|min:6',
+            ];
+        }
         return $rules;
     }
 
@@ -51,7 +52,7 @@ class UserRequest extends FormRequest
     {
         return [
             'email' => 'trim|lowercase',
-            'user_name' => 'trim|lowercase|escape'
+            'user_name' => 'trim|lowercase|escape',
         ];
     }
 }

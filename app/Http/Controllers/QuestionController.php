@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Answer;
-use App\Explanation;
-use Illuminate\Http\Request;
+use App\Grade;
 use App\Question;
-use Illuminate\Auth\Access\Gate;
+use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\QuestionRequest;
 use App\Subject;
+use Illuminate\Support\Facades\DB;
 
 class QuestionController extends Controller
 {
@@ -32,7 +31,9 @@ class QuestionController extends Controller
     {
         $this->middleware('auth');
         if(Gate::allows('isAdvisor')) {
-            return view('question.create');
+            $grades = Grade::where('id', '>=', '6')->get();
+            $subjects = Subject::all();
+            return view('question.create', compact('grades', 'subjects'));
         }
     }
 
@@ -47,48 +48,38 @@ class QuestionController extends Controller
         $this->middleware('auth');
         if(Gate::allows('isAdvisor')) {
             $validatedData = $request->validated();
-            $question = Question::create([
-                'grade_id' => $validatedData['grade_id'],
-                'subject_id' => $validatedData['subject_id'],
-                'body' => $validatedData['body'],
-            ]);
-    
-            // create this question explanation
-            Explanation::store($question->id, $validatedData['explanation']);
-            
-            //select correct answer choise
-            $choise = ['A', 'B', 'C', 'D'];
-            $correctAnswerChoise = rand(0, 3);
-            // conver incorrect answer to json file
-            $incorrectAnswer = array();
-            $count = 1;
-            for ($i=0; $i < 4; $i++) { 
-                if($i != $correctAnswerChoise) {
-                    $incorrectAnswer[$choise[$i]] = $validatedData['incorrect_answer_'.$count++];
-                }
-                else {
-                    $i++;
-                    $incorrectAnswer[$choise[$i]] = $validatedData['incorrect_answer_'.$count++];
-                }
+            DB::beginTransaction();
+            try {
+                $question = Question::create([
+                    'grade_id' => $validatedData['grade_id'],
+                    'subject_id' => $validatedData['subject_id'],
+                    'body' => $validatedData['body'],
+                    'user_id' => auth()->user()->id,
+                    'is_approved' => true,
+                ]);
+
+                // create this question explanation
+                ExplanationController::store($question->id, $validatedData['explanation']);
+                
+                
+                // conver incorrect answer to json file
+                $incorrectAnswer = array();
+                $incorrectAnswer[0] = $validatedData['incorrect_answer_1'];
+                $incorrectAnswer[1] = $validatedData['incorrect_answer_2'];
+                $incorrectAnswer[2] = $validatedData['incorrect_answer_3'];
+                $incorrectAnswer = json_encode($incorrectAnswer);
+        
+                //create answer for this question
+                AnswerController::store($question->id, $validatedData['correct_answer'], $incorrectAnswer);
+                DB::commit();
+                return redirect('/home');
             }
-            $incorrectAnswer = json_encode($incorrectAnswer);
-    
-            //create answer for this question
-            Answer::store($question->id, $validatedData['correct_answer'], $incorrectAnswer);
-            $this->index();
+            catch(\Exception $e) {
+                DB::rollback();
+                redirect()->back();
+            }
         }
 
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Question $question)
-    {
-        return view('question.show');
     }
 
     /**
@@ -101,8 +92,25 @@ class QuestionController extends Controller
     {
         $this->middleware('auth');
         if(Gate::allows('isAdvisor')) {
-            return view('question.edit');
+            $grades = Grade::all();
+            $subjects = Subject::all();
+            $question = $this->adjustQuestionAnswerExplanation($question);
+            return view('question.edit', compact('question', 'subjects', 'grades'));
         }
+    }
+
+    private static function adjustQuestionAnswerExplanation($question)    
+    {
+
+                $answer = $question->answer;
+                $question['correct_answer'] = $answer->correct;
+                $incorrectAnswers = json_decode($answer->incorrect, true);
+                $question['incorrect_answer_1'] = $incorrectAnswers[0];
+                $question['incorrect_answer_2'] = $incorrectAnswers[1];
+                $question['incorrect_answer_3'] = $incorrectAnswers[2];
+                $question['explanation'] = $question->explanation->body;
+            
+        return $question;
     }
 
     /**
@@ -115,30 +123,37 @@ class QuestionController extends Controller
     public function update(QuestionRequest $request, Question $question)
     {
         $this->middleware('auth');
-        if(Gate::allows('isAdvisor')) {
+        if(Gate::allows('isAdvisor') && Gate::allows('canUpdate', $question)) {
             $validatedData = $request->validated();
-            $question->update([
-                'grade_id' => $validatedData['grade_id'],
-                'subject_id' => $validatedData['subject_id'],
-                'body' => $validatedData['body'],
-            ]);
-    
-            // create this question explanation
-            Explanation::update($question->id, $validatedData['explanation']);
-            
-            
-            // conver incorrect answer to json file
-            $incorrectAnswer = array();
-            $incorrectAnswer[0] = $validatedData['incorrect_answer_1'];
-            $incorrectAnswer[1] = $validatedData['incorrect_answer_2'];
-            $incorrectAnswer[2] = $validatedData['incorrect_answer_3'];
-            
-            $incorrectAnswer = json_encode($incorrectAnswer);
-    
-            //create answer for this question
-            Answer::update($question->id, $validatedData['correct_answer'], $incorrectAnswer);
-            
-            $this->index();
+            DB::beginTransaction();
+            try {
+                $question->update([
+                    'grade_id' => $validatedData['grade_id'],
+                    'subject_id' => $validatedData['subject_id'],
+                    'body' => $validatedData['body'],
+                ]);
+        
+                // create this question explanation
+                ExplanationController::update($question->id, $validatedData['explanation']);
+                
+                
+                // conver incorrect answer to json file
+                $incorrectAnswer = array();
+                $incorrectAnswer[0] = $validatedData['incorrect_answer_1'];
+                $incorrectAnswer[1] = $validatedData['incorrect_answer_2'];
+                $incorrectAnswer[2] = $validatedData['incorrect_answer_3'];
+                
+                $incorrectAnswer = json_encode($incorrectAnswer);
+        
+                //create answer for this question
+                AnswerController::update($question->id, $validatedData['correct_answer'], $incorrectAnswer);
+                DB::commit();
+                return redirect('/home');
+                
+            } catch (\Exception $e) {
+                DB::rollback();
+                return redirect()->back();
+            }
         }
     }
 
@@ -151,9 +166,13 @@ class QuestionController extends Controller
     public function destroy(Question $question)
     {
         $this->middleware('auth');
-        if(Gate::allows('isAdvisor')) {
+        if(Gate::allows('isAdmin')) {
             $question->delete();
-            $this->index();
+            return redirect('/home');
+        }
+        elseif(Gate::allows('canUpdate', $question)) {
+            $question->delete();
+            return redirect('/home');
         }
     }
 }
