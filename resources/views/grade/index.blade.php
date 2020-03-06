@@ -1,1 +1,1 @@
-@extends('layout.advisorApp')
+@extends('layouts.advisorApp')

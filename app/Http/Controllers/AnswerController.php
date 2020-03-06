@@ -72,15 +72,17 @@ class AnswerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update($question_id, $correct_answer, $incorrect_answer)
+    public static function update($question_id, $correct_answer, $incorrect_answer)
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
         $answer = Answer::whereQuestionId($question_id)->first();
         $answer->update([
             'question_id' => $question_id,
             'correct' => $correct_answer,
             'incorrect' => $incorrect_answer,
         ]);
+        return true;
+        
     }
 
     /**

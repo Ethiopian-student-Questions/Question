@@ -3,7 +3,7 @@
 @section('content')
       <div class="container">
             @if ($questions->count() > 0)
-                  @foreach ($questions as $question )
+                  
                   <div class="list-group">
                         <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
                               
@@ -12,14 +12,15 @@
                               </div>
                               <div id="accordion">
                                     <div class="card">
-                                          <div class="card-header" id="headingThree">
+                                          @foreach ($questions as $question )
+                                          <div class="card-header mb-2" id="headingThree">
                                                 <h5 class="mb-0">
-                                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree{{$question->id}}" aria-expanded="false" aria-controls="collapseThree{{$question->id}}">
                                                 {{ $question->body }}
                                                 </button>
                                                 </h5>
                                           </div>
-                                          <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                                          <div id="collapseThree{{$question->id}}" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
                                                 <div class="card-body">
                                                       <div class="container">
                                                             <p>A. {{$question->correctAnswer}} <span class="ml-3 right badge badge-success">correct answer</span></p>
@@ -34,17 +35,27 @@
                                                             <p>{{ $question->explanation}}</p>
                                                       </div>
                                                 </div>
-                                                <form action="/question/{{ $question->id }}" class="mt-3" method="post">
+                                                <div class="row m-3">
+                                                       <form action="/question/{{ $question->id }}" class="m-3" method="GET">
+                                                      @csrf
+                                                      {{-- {{ method_field('PUT') }} --}}
+                                                      <button type="submit" class="btn btn-primary">Edit</button>
+                                                </form>
+                                                 <form action="/question/{{ $question->id }}" class="m-3" method="post">
                                                       @csrf
                                                       {{ method_field('DELETE') }}
                                                       <button type="submit" class="btn btn-danger">delete</button>
-                                                  </form>
+                                                </form>
+                                               
+                                                </div>
+                                                
                                           </div>
+                                          @endforeach
                                     </div>
                               </div>
                         </a>
                   </div>
-            @endforeach
+            
             @else
                   <div class="list-group">
                         <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
