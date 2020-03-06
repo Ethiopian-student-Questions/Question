@@ -32,5 +32,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('isAdvisor', function($user) {
             return $user->type === 'adviser';
         });
+
+        Gate::define('canUpdate', function($user, $question) {
+            return $user->id === $question->user_id;
+        });
     }
 }

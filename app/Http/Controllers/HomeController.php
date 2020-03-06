@@ -23,19 +23,19 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public static function index()
     {
         if(Gate::allows('isAdmin')) {
             $users = UserController::index();
             return view('admin.adminHome', compact('users'));
         }
         elseif(Gate::allows('isAdvisor')) {
-            $questions = $this->adjustQuestionAnswerExplanation();
+            $questions = HomeController::adjustQuestionAnswerExplanation();
             return view('question.index', compact('questions'));
         }
     }
 
-    private function adjustQuestionAnswerExplanation()    
+    private static function adjustQuestionAnswerExplanation()    
     {
         $questions = auth()->user()->questions;
         foreach ($questions as $question) {

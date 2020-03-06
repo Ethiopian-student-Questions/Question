@@ -33,9 +33,8 @@ class AnswerController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store($question_id, $correct_answer, $incorrect_answer)
+    public static function store($question_id, $correct_answer, $incorrect_answer)
     {
-        $this->middleware('auth');
         Answer::create([
             'question_id' => $question_id,
             'correct' => $correct_answer,
@@ -74,7 +73,6 @@ class AnswerController extends Controller
      */
     public static function update($question_id, $correct_answer, $incorrect_answer)
     {
-        // $this->middleware('auth');
         $answer = Answer::whereQuestionId($question_id)->first();
         $answer->update([
             'question_id' => $question_id,

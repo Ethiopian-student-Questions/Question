@@ -18,6 +18,9 @@
     @endforeach
   </div>
 </div>
+@if (session('success'))
+    <confermation-message message={{ session('success') }}></confermation-message>
+@endif
 @endsection
 
 

@@ -24,7 +24,7 @@
         <div id="app">
             <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
                 <div class="container">
-                    <a class="navbar-brand" href="{{ url('/') }}">
+                    <a class="navbar-brand" href="{{ url('/home') }}">
                         {{ config('app.name', 'Laravel') }}
                     </a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -44,7 +44,10 @@
                               <a class="nav-link" href="/subject" role="tab" aria-controls="profile" aria-selected="false">Subject</a>
 
                             </li>
-                          
+                      <li class="nav-item">
+                                <a class="nav-link" href="/user/deactivated" role="tab" aria-controls="deactivated" aria-selected="false">Deactivated Users</a>
+                              </li>
+
                           </ul>
                         <!-- Right Side Of Navbar -->
                         <ul class="navbar-nav ml-auto">
@@ -60,6 +63,7 @@
                                 @endif
                             @else
                                 <a href="/user/create" class="mt-2 text-dark">Add User</a>
+                                <a href="{{route('user.edit', auth()->user()->id)}}" class="mt-2 text-primary ml-3 mr-3">Edit Profile</a>
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                         {{ Auth::user()->user_name }} <span class="caret"></span>

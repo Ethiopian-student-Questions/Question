@@ -27,7 +27,9 @@ class QuestionRequest extends FormRequest
     public function rules()
     {
         return [
+
             'grade_id' => 'integer|required',
+            'grade_id' => 'required|integer',
             'subject_id' => 'required|integer',
             'body' => 'required|string',
             'explanation' => 'required|string',

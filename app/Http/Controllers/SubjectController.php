@@ -8,11 +8,6 @@ use Illuminate\Http\Request;
 
 class SubjectController extends Controller
 {
-
-    public function _construct()
-    {
-        $this->middleware('auth');
-    }
     /**
      * Display a listing of the resource.
      *
@@ -20,6 +15,7 @@ class SubjectController extends Controller
      */
     public function index()
     {
+        $this->middleware('auth');
         $subjects = Subject::all();
         return view('admin.subject.index', compact('subjects'));
     }
@@ -31,6 +27,7 @@ class SubjectController extends Controller
      */
     public function create()
     {
+        $this->middleware('auth');
         if(Gate::allows('isAdmin')) {
             return view('admin.subject.create');
         }
@@ -44,6 +41,7 @@ class SubjectController extends Controller
      */
     public function store(Request $request)
     {
+        $this->middleware('auth');
         if(Gate::allows('isAdmin')) {
             $request->validate([
                 'name' => 'required|string|unique:subjects',
@@ -53,7 +51,7 @@ class SubjectController extends Controller
                 'name' => $request->name,
             ]);
 
-            return $this->index();
+            return redirect('/subject');;
         }
     }
 
@@ -65,7 +63,22 @@ class SubjectController extends Controller
      */
     public function show(Subject $subject)
     {
+        $subject['questions'] = $this->adjustQuestionAnswerExplanation($subject);
         return view('admin.subject.show', compact('subject'));
+    }
+
+    private function adjustQuestionAnswerExplanation($subject)    
+    {
+        $questions = $subject->questions;
+        foreach ($questions as $question) {
+
+                $answer = $question->answer;
+                $question['correctAnswer'] = $answer->correct;
+                $question['incorrectAnswer'] = json_decode($answer->incorrect, true);
+                $question['explanation'] = $question->explanation->body;
+                
+            }
+        return $questions;
     }
 
     /**
@@ -76,6 +89,7 @@ class SubjectController extends Controller
      */
     public function edit(Subject $subject)
     {
+        $this->middleware('auth');
         if(Gate::allows('isAdmin')) {
             return view('subject.edit', compact('subject'));
         }
@@ -90,6 +104,7 @@ class SubjectController extends Controller
      */
     public function update(Request $request, Subject $subject)
     {
+        $this->middleware('auth');
         if(Gate::allows('isAdmin')) {
             $request->validate([
                 'name' => 'required|string|unique:subjects,name,'.$this->name,
@@ -99,7 +114,7 @@ class SubjectController extends Controller
                 'name' => $request->name,
             ]);
 
-            $this->index();
+            redirect('/subject');
         }
     }
 
@@ -111,10 +126,11 @@ class SubjectController extends Controller
      */
     public function destroy(Subject $subject)
     {
+        $this->middleware('auth');
         if(Gate::allows('isAdmin')) {
             $subject->delete();
 
-            $this->index();
+            redirect('/subject');
         }
     }
 }
